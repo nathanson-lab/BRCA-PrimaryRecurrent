@@ -1,0 +1,2 @@
+Path to coverage file:
+ftp://gpftp.broadinstitute.org/module_support_files/MutSigCV_1.4/exome_full192.coverage.txt
