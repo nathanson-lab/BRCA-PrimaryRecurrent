@@ -1,0 +1,75 @@
+#############################
+#Brad Wubbenhorst
+#bwubb@pennmedicine.upenn.edu
+#Mar. 2021
+
+#This code is used to run Sequenza paired somatic variant calling.
+#It will require R and sequenza-utils
+
+import os
+
+#List of samples
+with open(config.get('project',{}).get('sample_list','samples.list'),'r') as i:
+    SAMPLES=i.read().splitlines()
+    for sample in SAMPLES:
+        os.makedirs(f'logs/cluster/{sample}',exist_ok=True)
+
+#Tab separated file. Tumor Normal pairs
+with open(config.get('project',{}).get('pairs_table','pairs.table'),'r') as p:
+    PAIRS=dict(line.split('\t') for line in p.read().splitlines())
+
+#Tab separated file. Sample /path/to/file.bam
+with open(config.get('project',{}).get('bams_table','bams.table'),'r') as b:
+    BAMS=dict(line.split('\t') for line in b.read().splitlines())
+
+### FUNCTIONS ###
+
+def paired_bams(wildcards):
+    ref=config['reference']['key']
+    tumor=wildcards.tumor
+    normal=PAIRS[wildcards.tumor]
+    return {'tumor':BAMS[wildcards.tumor],'normal':BAMS[normal]}
+
+### SNAKEMAKE ###
+
+wildcard_constraints:
+    work_dir=f"data/work/{config['resources']['targets_key']}"
+
+rule collect_sequenza:
+    input:
+        expand("data/work/{lib}/{tumor}/sequenza/{tumor}_segments.txt",lib=f"{config['resources']['targets_key']}",tumor=PAIRS.keys())
+
+rule Sequenza_bam2seqz:
+    input:
+        unpack(paired_bams)
+    params:
+        ref=config['reference']['fasta'],
+        gc=config['reference']['gc_wiggle']
+    output:
+        "{work_dir}/{tumor}/sequenza/seqz.gz"
+    shell:
+        "sequenza-utils bam2seqz -F {params.ref} -gc {params.gc} -n {input.normal} -t {input.tumor} | gzip > {output}"
+
+rule Sequenza_bin:
+    input:
+        "{work_dir}/{tumor}/sequenza/seqz.gz"
+    output:
+        "{work_dir}/{tumor}/sequenza/seqz.small.gz"
+    params:
+        bin=50
+        #50 for exome 200 for genome
+    shell:
+        "sequenza-utils seqz_binning -w {params.bin} -s {input} -o - | gzip > {output}"
+
+rule Sequenza_extract:
+    input:
+        "{work_dir}/{tumor}/sequenza/seqz.small.gz"
+    output:
+        "{work_dir}/{tumor}/sequenza/{tumor}_confints_CP.txt",
+        "{work_dir}/{tumor}/sequenza/{tumor}_segments.txt"
+    params:
+        outdir="{work_dir}/{tumor}/sequenza"
+    threads:
+        4
+    script:
+        "sequenza-snakemake.R"
