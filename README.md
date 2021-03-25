@@ -30,5 +30,6 @@ snakemake -s varscan2.snake --configfile config.yaml
 ## Author
 Jennifer Shah
 <jennshah@pennmedicine.upenn.edu>
+
 Brad Wubbenhorst
 <bwubb@pennmedicine.upenn.edu>
