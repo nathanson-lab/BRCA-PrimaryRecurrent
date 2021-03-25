@@ -5,18 +5,18 @@ Scripts for somatic variant calling and allele-specific copy number profiling in
 
 Required Software:
 
-    Python 3.6+
-    vcfpy
-    Snakemake
-    samtools
-    bcftools
-    GATK 4
-    Strelka2
-    VarDictJava
-    VarScan2
-    R
-    Sequenza (R Package)
-    Sequenza-utils
+* Python 3.6+
+* vcfpy
+* Snakemake
+* samtools
+* bcftools
+* GATK 4
+* Strelka2
+* VarDictJava
+* VarScan2
+* R
+* Sequenza (R Package)
+* Sequenza-utils
 
 ## Usage
 ```
