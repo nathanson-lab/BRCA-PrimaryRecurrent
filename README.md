@@ -27,7 +27,7 @@ snakemake -s sequenza.snake --configfile config.yaml
 snakemake -s varscan2.snake --configfile config.yaml
 ```
 
-## Author
+## Authors
 Jennifer Shah
 <jennshah@pennmedicine.upenn.edu>
 
