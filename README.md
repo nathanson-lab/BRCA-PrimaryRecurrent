@@ -58,3 +58,5 @@ Brad Wubbenhorst
 <bwubb@pennmedicine.upenn.edu>
 
 ## Paper Citation
+
+[![DOI](https://zenodo.org/badge/349245142.svg)](https://zenodo.org/badge/latestdoi/349245142)
